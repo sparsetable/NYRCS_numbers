@@ -1,6 +1,8 @@
 # NYRCS_numbers
 This project will be used for an educational AI demonstration on NY research day (21st May 2025).
 
+Trained on MNIST dataset obtained from https://www.kaggle.com/datasets/oddrationale/mnist-in-csv. https://drive.google.com/drive/folders/111m0ZpYKW9ADVDxhy1pkcCZowJjMmffv?usp=sharing. Download and unzip both csvs into this file.
+
 ## Implementation
 This project will let students draw a number and have an MLP decide what number it looks like.
 

@@ -1,5 +1,6 @@
 """
 Uses MLP to make predictions on what number a drawing is.
+Based on https://www.youtube.com/watch?v=w8yWXqWQYmU
 """
 
 def recognise(image: list) -> list:
@@ -20,14 +21,14 @@ def image_str(image: list, threshold = 50) -> None:
 	for row in image:
 		for pixel in row:
 			if pixel > round(256 * (4/5)):
-				result += shades[0]
+				result += SHADES[0]*2
 			elif pixel > round(256 * (3/5)):
-				result += shades[1]
+				result += SHADES[1]*2
 			elif pixel > round(256 * (2/5)):
-				result += shades[2]
+				result += SHADES[2]*2
 			elif pixel > round(256 * (1/5)):
-				result += shades[1]
+				result += SHADES[3]*2
 			else:
-				result += shades[0]
+				result += SHADES[4]*2
 		result += '\n'
 	return result
