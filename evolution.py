@@ -21,7 +21,23 @@ def mutation(coeff):
     b2 = np.random.rand(10, 1) * 2 - 1
     return W1 * coeff, b1 * coeff, W2 * coeff, b2 * coeff
 
-GENLOG_FILE = "generations.txt"
+GENLOG_FILE = "generations.txt" # generation number log
+def get_made_model() -> tuple:
+	"""Tries to read the starting model from W1.npy, b1.npy, W2.npy, b2.npy.
+	Raises RuntimeError if not found."""
+	try:
+		W1 = np.load("W1.npy")
+		b1 = np.load("b1.npy")
+		W2 = np.load("W2.npy")
+		b2 = np.load("b2.npy")
+		model = (W1, b1, W2, b2)
+
+		with open(GENLOG_FILE, 'r') as gen_file:
+			log(f"Using preexisting model with {gen_file.read()} generations already ran")
+		return model
+	except FileNotFoundError:
+		raise RuntimeError("No model generated yet! Run evolution.py for ~1000 generations to generate!")
+
 def get_starting_model() -> tuple:
 	"""Tries to read the starting model from W1.npy, b1.npy, W2.npy, b2.npy
 	Makes a new one if not found."""

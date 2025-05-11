@@ -1,6 +1,7 @@
 """
 Sourced from https://www.youtube.com/watch?v=w8yWXqWQYmU
 Implements forward propagation from scratch & initialising of parameters
+Code is disgusting because its all math
 """
 
 import numpy as np
