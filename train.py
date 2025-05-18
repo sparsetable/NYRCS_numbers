@@ -31,6 +31,7 @@ def backward_prop(X, Y, Z1, A1, Z2, A2, W2):
 
 	dA1 = W2.T @ dZ2
 	dZ1 = dA1 * (A1 > 0)  # ReLU derivative
+	# dZ1 = dA1 * A1 * (1 - A1) # Sigmoid derivative
 	dW1 = dZ1 @ X.T
 	db1 = np.sum(dZ1, axis=1, keepdims=True)
 

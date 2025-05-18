@@ -2,8 +2,18 @@
 Uses MLP to make predictions on what number a drawing is.
 Based on https://www.youtube.com/watch?v=w8yWXqWQYmU
 """
-from evolution import *
+from train import *
 model = get_made_model()
+
+def get_mnist_image(index: int = 0):
+    """
+    Retrieves the image and label at the given index from the MNIST dataset.
+    Returns (label, image_2d_list)
+    """
+    label = data[index, 0]
+    image_flat = data[index, 1:]
+    image_2d = image_flat.reshape(28, 28).astype(int)
+    return label, image_2d.tolist()
 
 def image_to_nparray(image):
     """Converts 28*28 image array to the np array for the neural network's X"""
@@ -43,3 +53,5 @@ def image_str(image: list, threshold = 50) -> None:
 				result += SHADES[4]*2
 		result += '\n'
 	return result
+
+# print(image_str(get_mnist_image(1)[1]))

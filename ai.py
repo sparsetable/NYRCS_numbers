@@ -26,14 +26,19 @@ X_train = X_train / 255.
 _,m_train = X_train.shape
 
 def init_params():
-    W1 = np.random.rand(10, 784) - 0.5
-    b1 = np.random.rand(10, 1) - 0.5
-    W2 = np.random.rand(10, 10) - 0.5
+    # W1 = np.random.rand(10, 784) - 0.5
+    # b1 = np.random.rand(10, 1) - 0.5
+    # W2 = np.random.rand(10, 10) - 0.5
+    W1 = np.random.rand(30, 784) - 0.5 # Add more neurons in hidden layer (10 -> 30)
+    b1 = np.random.rand(30, 1) - 0.5
+    W2 = np.random.rand(10, 30) - 0.5
     b2 = np.random.rand(10, 1) - 0.5
     return W1, b1, W2, b2
 
 def ReLU(Z):
     return np.maximum(Z, 0)
+# def sigmoid(Z):
+#     return 1 / (1 + np.exp(-Z))
 
 def softmax(Z):
     A = np.exp(Z) / sum(np.exp(Z))
@@ -42,6 +47,7 @@ def softmax(Z):
 def forward_prop(W1, b1, W2, b2, X):
     Z1 = W1.dot(X) + b1
     A1 = ReLU(Z1)
+    # A1 = sigmoid(Z1)
     Z2 = W2.dot(A1) + b2
     A2 = softmax(Z2)
     return Z1, A1, Z2, A2

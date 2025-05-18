@@ -11,6 +11,7 @@ def index():
 @app.route('/ai', methods=["POST"])
 def ai():
   pixels = request.json["pixels"]
+  print(process.image_str(pixels))
   response = process.recognise(pixels)
   maxNo, maxProb = 0, 0
   for i in range(len(response)):
