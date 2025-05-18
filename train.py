@@ -5,21 +5,44 @@ def log(*args, **kwargs):
 	print(f"{round(perf_counter() - begin, 2)}s - ", *args, **kwargs)
 
 from ai import *
-one_hot_Y = one_hot(Y_dev) # precompute the one_hot_Y
+one_hot_Y = one_hot(Y_train) # precompute the one_hot_Y
 
 log("Initialised!!")
 
 def get_loss(A2, one_hot_Y):
-    loss = np.mean((A2 - one_hot_Y) ** 2)
-    return loss
+	loss = np.mean((A2 - one_hot_Y) ** 2)
+	return loss
 
 # values range from -coeff to +coeff
 def mutation(coeff):
-    W1 = np.random.rand(10, 784) * 2 - 1
-    b1 = np.random.rand(10, 1) * 2 - 1
-    W2 = np.random.rand(10, 10) * 2 - 1
-    b2 = np.random.rand(10, 1) * 2 - 1
-    return W1 * coeff, b1 * coeff, W2 * coeff, b2 * coeff
+	W1 = np.random.rand(10, 784) * 2 - 1
+	b1 = np.random.rand(10, 1) * 2 - 1
+	W2 = np.random.rand(10, 10) * 2 - 1
+	b2 = np.random.rand(10, 1) * 2 - 1
+	return W1 * coeff, b1 * coeff, W2 * coeff, b2 * coeff
+
+# Backward propagation too
+def backward_prop(X, Y, Z1, A1, Z2, A2, W2):
+	"""Calculate backward prop derivatives"""
+	m = Y.shape[1]
+	dZ2 = 2 * (A2 - Y) / m
+	dW2 = dZ2 @ A1.T
+	db2 = np.sum(dZ2, axis=1, keepdims=True)
+
+	dA1 = W2.T @ dZ2
+	dZ1 = dA1 * (A1 > 0)  # ReLU derivative
+	dW1 = dZ1 @ X.T
+	db1 = np.sum(dZ1, axis=1, keepdims=True)
+
+	return dW1, db1, dW2, db2
+
+def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, lr):
+	"""Apply derivatives"""
+	W1 -= lr * dW1
+	b1 -= lr * db1
+	W2 -= lr * dW2
+	b2 -= lr * db2
+	return W1, b1, W2, b2
 
 GENLOG_FILE = "generations.txt" # generation number log
 def get_made_model() -> tuple:
@@ -57,7 +80,7 @@ def get_starting_model() -> tuple:
 
 def run_evolution(model: tuple, gen_n: int, size: int) -> tuple:
 	"""Run evolution on a model for a number of generations,
-	with a set population size..
+	with a set population size.
 	Returns the model.
 	A generation is a mutation then a selection."""
 	global_best_loss = float('inf')
@@ -77,7 +100,7 @@ def run_evolution(model: tuple, gen_n: int, size: int) -> tuple:
 		best_loss = float('inf')
 		for model in models:
 			W1, b1, W2, b2 = model
-			Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X_dev)
+			Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X_train)
 			loss = get_loss(A2, one_hot_Y)
 			# dev_predictions = get_predictions(A2)
 			# log(round(loss, 2), get_accuracy(dev_predictions, Y_dev))
@@ -102,6 +125,22 @@ def run_evolution(model: tuple, gen_n: int, size: int) -> tuple:
 		models = [best_model] * size
 
 	return best_model
+
+def run_backprop(model: tuple, epochs: int, lr: float) -> tuple:
+	"""Trains model with backprop"""
+	W1, b1, W2, b2 = model
+	for epoch in range(1, epochs + 1):
+		Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X_train)
+		loss = get_loss(A2, one_hot_Y)
+
+		dW1, db1, dW2, db2 = backward_prop(X_train, one_hot_Y, Z1, A1, Z2, A2, W2)
+		W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, lr)
+
+		log(f"Epoch {epoch}/{epochs} - Loss: {round(loss, 6)}")
+		dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
+		log("^ Accuracy =", get_accuracy(dev_predictions, Y_dev))
+
+	return W1, b1, W2, b2
 
 def increment_gen_log(number: int) -> None:
 	"""We also keep a generations.txt which stores the number of generations run on the currently saved model.
@@ -128,9 +167,19 @@ def save_model(model: tuple, gen_ran: int) -> None:
 
 def main():
 	model = get_starting_model()
-	gen_total = int(input("Enter how many generations do you want to run: "))
-	model = run_evolution(model, gen_total, 50)
-	save_model(model, gen_total)
+	approach = input("Enter 1 for backpropagation and 2 for evolution: ")
+
+	if approach == "1":
+		epochs = int(input("Enter how many epochs to train: "))
+		lr = float(input("Enter learning rate (e.g., 0.01): "))
+		model = run_backprop(model, epochs, lr)
+	elif approach == "2":
+		gen_total = int(input("Enter how many generations do you want to run: "))
+		model = run_evolution(model, gen_total, 50)
+	else:
+		raise ValueError("Enter valid approach number!")
+
+	save_model(model, epochs)
 
 if __name__ == "__main__":
 	main()
