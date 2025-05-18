@@ -1,0 +1,30 @@
+body {
+  --pixelWidth: 20px;
+  --pixelHeight: var(--pixelWidth);
+  --pixelColor: rgb(0, 0, 0);
+}
+
+.drawpixel {
+  display: flex;
+  width: var(--pixelWidth);
+  height: var(--pixelHeight);
+  background-color: var(--pixelColor);
+  visibility: hidden;
+}
+
+.drawpad {
+  display: grid;
+  grid-template-columns: repeat(28, var(--pixelWidth));
+  row-gap: 1px;
+  column-gap: 1px;
+}
+
+button {
+  height: min-content;
+}
+
+.section {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+}
