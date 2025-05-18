@@ -18,8 +18,6 @@ def ai():
     if int(response[i]) > maxProb:
       maxNo = i
       maxProb = response[i]
-
-    response[i] = f"{round(response[i],2)}%"
     
   return {"response": response, "maxNo": maxNo}
 

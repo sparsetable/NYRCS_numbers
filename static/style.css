@@ -28,3 +28,29 @@ button {
   flex-direction: row;
   column-gap: 10px;
 }
+
+/* Center all stuff in the body*/
+body {
+  margin: 0;
+  height: 100vh; /* Full height of viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center;     /* Center horizontally */
+  background-color: #f0f0f0; /* Optional: light background */
+}
+
+/* Pad whole buttons section */
+.buttons {
+  padding: 10px;
+}
+
+#response {
+  text-align: center;
+  margin: 10px;
+}
+
+/* button padding */
+.drawpad-button {
+  margin: 5px !important;
+}

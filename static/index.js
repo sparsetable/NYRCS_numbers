@@ -74,6 +74,7 @@ function clearDrawing() {
     pixel.curShade = 0;
     pixel.style.backgroundColor = 'rgb(0,0,0)';
   }
+  responseElem.innerText = "";
 }
 
 // Convert predictions to string
@@ -82,6 +83,7 @@ function convertArr(acc, s, i) {
 }
 
 // Send drawing to backend for prediction
+// Draw as progress bars w/ green badge for correct one
 function predictDrawing() {
   $.ajax({
     type: "POST",
@@ -89,9 +91,35 @@ function predictDrawing() {
     data: JSON.stringify({ "pixels": getAllPixels() }),
     contentType: "application/json",
     success: function (resp) {
-      responseElem.innerText =
-        resp["response"].reduce(convertArr, "") +
-        `I would predict a ${resp["maxNo"]}`;
+      const percentages = resp["response"];
+      let html = "";
+
+      percentages.forEach((pct, i) => {
+        html += `
+          <div class="mb-2">
+            <div>
+              <strong>Digit ${i}:</strong>
+              <small>${pct.toFixed(2)}%</small>
+            </div>
+            <div class="progress">
+              <div
+                class="progress-bar"
+                role="progressbar"
+                style="width: ${pct}%;"
+                aria-valuenow="${pct}"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+          </div>`;
+      });
+
+      html += `<div class="mt-3 text-center">
+                 <h5>I predict: <span class="badge bg-success">${resp["maxNo"]}</span></h5>
+               </div>`;
+
+      responseElem.innerHTML = html;
     }
   });
 }
+
